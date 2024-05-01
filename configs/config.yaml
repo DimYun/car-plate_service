@@ -1,0 +1,4 @@
+content_process:
+  dir_path: 'api_test_dir'
+  dir_upload: 'uploaded_imgs'
+
