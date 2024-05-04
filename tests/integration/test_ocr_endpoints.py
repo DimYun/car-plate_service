@@ -11,7 +11,7 @@ def test_types_list(client: TestClient):
     """
     response = client.get("/plates/get_content?content_id=test")
     assert response.status_code == HTTPStatus.OK
-
+    print('response: ', response.json())
     plate_types = response.json()["content"]["plates"][0]['value'][0]
 
     assert isinstance(plate_types, str)
