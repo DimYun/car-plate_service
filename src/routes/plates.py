@@ -1,3 +1,5 @@
+"""Module for FastAPI requests infrastructure"""
+
 import cv2
 import numpy as np
 from dependency_injector.wiring import Provide, inject
@@ -14,7 +16,13 @@ from src.services.plate_process import ProcessPlate, Storage
 def get_content(
     content_id: str,
     storage: Storage = Depends(Provide[Container.store]),
-):
+) -> dict:
+    """
+    Define GET content
+    :param content_id: id of content
+    :param storage: container with storage functionality
+    :return: dict with content
+    """
     return {
         "content": storage.get(content_id),
     }
@@ -30,7 +38,13 @@ def process_content(
         description="Image for inference.",
     ),
     content_process: ProcessPlate = Depends(Provide[Container.content_process]),
-):
+) -> dict:
+    """
+    Define POST
+    :param content_image: input image
+    :param content_process: container with process functionality
+    :return: dictionary with results in json format
+    """
     try:
         image_data = content_image.file.read()
     except Exception:

@@ -1,3 +1,4 @@
+"""Main module for FastAPI car plates service."""
 import argparse
 
 import uvicorn
@@ -10,6 +11,10 @@ from src.routes.routers import router as app_router
 
 
 def create_app() -> FastAPI:
+    """
+    Create FastAPI application with DPI Containers
+    :return: FastAPI application
+    """
     container = Container()
     cfg = OmegaConf.load("configs/config.yaml")
     container.config.from_dict(cfg)
@@ -23,6 +28,10 @@ def create_app() -> FastAPI:
 if __name__ == "__main__":
 
     def arg_parse():
+        """
+        Parse command line
+        :return: dictionary with command line arguments
+        """
         parser = argparse.ArgumentParser()
         parser.add_argument("port", type=int, help="port number")
         return parser.parse_args()

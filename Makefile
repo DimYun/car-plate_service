@@ -1,7 +1,7 @@
 APP_PORT := 5039
 DOCKER_TAG := latest
-DOCKER_IMAGE := planet
-DVC_REMOTE_NAME := models_onnx
+DOCKER_IMAGE := plates
+DVC_REMOTE_NAME := dvc_models_plates
 USERNAME := d.iunovidov
 
 .PHONY: run_app
@@ -14,7 +14,7 @@ install:
 
 .PHONY: download_model
 download_model:
-	dvc remote modify --local models_onnx keyfile ~/.ssh/id_rsa
+	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/id_rsa
 	dvc pull
 
 .PHONY: run_unit_tests
@@ -36,9 +36,7 @@ generate_coverage_report:
 
 .PHONY: lint
 lint:
-	PYTHONPATH=. flake8 .
-	PYTHONPATH=. black .
-	PYTHONPATH=. isort .
+	PYTHONPATH=. tox
 
 .PHONY: build
 build:
@@ -67,7 +65,7 @@ install_dvc:
 .PHONY: init_dvc
 init_dvc:
 	dvc init --no-scm
-	dvc remote add --default $(DVC_REMOTE_NAME) ssh://91.206.15.25/home/$(USERNAME)/dvc_models
+	dvc remote add --default $(DVC_REMOTE_NAME) ssh://91.206.15.25/home/$(USERNAME)/$(DVC_REMOTE_NAME)
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
 

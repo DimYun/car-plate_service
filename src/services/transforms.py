@@ -1,12 +1,13 @@
-from typing import Union, List, Dict
-import cv2
-import numpy as np
-from numpy import random
+"""Module for data transformation."""
+
+from typing import Dict, List, Union
 
 import albumentations as albu
+import cv2
+import numpy as np
 import torch
 from albumentations.pytorch import ToTensorV2
-
+from numpy import random
 
 TRANSFORM_TYPE = Union[albu.BasicTransform, albu.BaseCompose]
 
@@ -36,9 +37,9 @@ def get_transforms(
     if augmentations:
         transforms.extend(
             [
-                CropPerspective(p=0.8),
-                ScaleX(p=0.8),
-            ]
+                CropPerspective(p_value=0.8),
+                ScaleX(p_value=0.8),
+            ],
         )
 
     if preprocessing:
@@ -46,8 +47,8 @@ def get_transforms(
             PadResizeOCR(
                 target_height=height,
                 target_width=width,
-                mode='random' if augmentations else 'left',
-            )
+                mode="random" if augmentations else "left",
+            ),
         )
 
     if augmentations:
@@ -69,7 +70,7 @@ def get_transforms(
                     p=0.3,
                 ),
                 albu.Perspective(pad_mode=cv2.BORDER_CONSTANT, p=0.3),
-            ]
+            ],
         )
 
     if postprocessing:
@@ -78,7 +79,7 @@ def get_transforms(
                 albu.Normalize(),
                 TextEncode(vocab=vocab, target_text_size=text_size),
                 ToTensorV2(),
-            ]
+            ],
         )
 
     return albu.Compose(transforms)
@@ -86,25 +87,28 @@ def get_transforms(
 
 class PadResizeOCR:
     """
-    Приводит к нужному размеру с сохранением отношения сторон, если нужно добавляет падинги.
+    Приводит к нужному размеру с сохранением отношения сторон,
+    если нужно добавляет падинги.
     """
 
     def __init__(
-            self,
-            target_width,
-            target_height,
-            value: int = 0,
-            mode: str = 'random'
+        self, target_width, target_height, pad_value: int = 0, mode: str = "random",
     ):
         self.target_width = target_width
         self.target_height = target_height
-        self.value = value
+        self.pad_value = pad_value
         self.mode = mode
 
-        assert self.mode in {'random', 'left', 'center'}
+        assert self.mode in {"random", "left", "center"}
 
     def __call__(self, force_apply=False, **kwargs) -> Dict[str, np.ndarray]:
-        image = kwargs['image'].copy()
+        """
+        Call function for PadResizeOCR class
+        :param force_apply: flag to force applying
+        :param kwargs: keyword arguments
+        :return: dictionary with transformed data
+        """
+        image = kwargs["image"].copy()
 
         h, w = image.shape[:2]
 
@@ -113,18 +117,20 @@ class PadResizeOCR:
 
         dw = np.round(self.target_width - tmp_w).astype(int)
         if dw > 0:
-            if self.mode == 'random':
+            if self.mode == "random":
                 pad_left = np.random.randint(dw)
-            elif self.mode == 'left':
+            elif self.mode == "left":
                 pad_left = 0
             else:
                 pad_left = dw // 2
 
             pad_right = dw - pad_left
 
-            image = cv2.copyMakeBorder(image, 0, 0, pad_left, pad_right, cv2.BORDER_CONSTANT, value=0)
+            image = cv2.copyMakeBorder(
+                image, 0, 0, pad_left, pad_right, cv2.BORDER_CONSTANT, value=0,
+            )
 
-        kwargs['image'] = image
+        kwargs["image"] = image
         return kwargs
 
 
@@ -132,6 +138,7 @@ class TextEncode:
     """
     Кодирует исходный текст.
     """
+
     symbols_non_latin = (
         "АВ5СЕКХНМОРТУ0123456789ӨҮՈ",
         "AB5CEKXHMOPTY0123456789&Y#",
@@ -139,29 +146,31 @@ class TextEncode:
 
     tr_non_latin = {ord(a): ord(b) for a, b in zip(*symbols_non_latin)}
 
-    def __init__(
-            self,
-            vocab: Union[str, List[str]],
-            target_text_size: int
-    ):
+    def __init__(self, vocab: Union[str, List[str]], target_text_size: int):
         self.vocab = vocab if isinstance(vocab, list) else list(vocab)
         self.target_text_size = target_text_size
 
     def __call__(self, force_apply=False, **kwargs) -> Dict[str, np.ndarray]:
-        source_text = kwargs['text'].strip()
+        """
+        Call function for Text Encoding
+        :param force_apply: flag to force apply
+        :param kwargs: keyword arguments
+        :return: dictionary with transformed data
+        """
+        source_text = kwargs["text"].strip()
         source_text = source_text.upper().translate(self.tr_non_latin)
 
         postprocessed_text = [
-            self.vocab.index(x) + 1 for x in source_text if x in self.vocab
+            self.vocab.index(_) + 1 for _ in source_text if _ in self.vocab
         ]
         postprocessed_text = np.pad(
             postprocessed_text,
-            (0, self.target_text_size - len(postprocessed_text)),
-            mode='constant',
+            pad_width=(0, self.target_text_size - len(postprocessed_text)),
+            mode="constant",
         )
         postprocessed_text = torch.IntTensor(postprocessed_text)
 
-        kwargs['text'] = postprocessed_text
+        kwargs["text"] = postprocessed_text
 
         return kwargs
 
@@ -170,33 +179,40 @@ class CropPerspective:
     """
     Selfwrited class for augmentations for geometric tranformation
     """
+
     def __init__(
-            self,
-            p: float = 0.5,
-            width_ratio: float = 0.04,
-            height_ratio: float = 0.08
+        self,
+        p_value: float = 0.5,
+        width_ratio: float = 0.04,
+        height_ratio: float = 0.08,
     ):
-        self.p = p
+        self.p_value = p_value
         self.width_ratio = width_ratio
         self.height_ratio = height_ratio
 
-    def __call__(self, force_apply=False, **kwargs):
-        image = kwargs['image'].copy()
+    def __call__(self, force_apply=False, **kwargs) -> Dict[str, np.ndarray]:
+        """
+        Call function for CropPerspective transformation
+        :param force_apply: flag to force applying
+        :param kwargs: keyword arguments
+        :return: dictionary with transformed data
+        """
+        image = kwargs["image"].copy()
 
-        if random.random() < self.p:
-            h, w, c = image.shape
+        if random.random() < self.p_value:
+            img_h, img_w, img_c = image.shape
 
-            pts1 = np.float32([[0, 0], [0, h], [w, h], [w, 0]])
-            dw = w * self.width_ratio
-            dh = h * self.height_ratio
+            pts1 = np.float32([[0, 0], [0, img_h], [img_w, img_h], [img_w, 0]])
+            dw = img_w * self.width_ratio
+            dh = img_h * self.height_ratio
 
             pts2 = np.float32(
                 [
                     [random.uniform(-dw, dw), random.uniform(-dh, dh)],
-                    [random.uniform(-dw, dw), h - random.uniform(-dh, dh)],
-                    [w - random.uniform(-dw, dw), h - random.uniform(-dh, dh)],
-                    [w - random.uniform(-dw, dw), random.uniform(-dh, dh)],
-                ]
+                    [random.uniform(-dw, dw), img_h - random.uniform(-dh, dh)],
+                    [img_w - random.uniform(-dw, dw), img_h - random.uniform(-dh, dh)],
+                    [img_w - random.uniform(-dw, dw), random.uniform(-dh, dh)],
+                ],
             )
 
             matrix = cv2.getPerspectiveTransform(pts2, pts1)
@@ -205,11 +221,11 @@ class CropPerspective:
             image = cv2.warpPerspective(
                 image,
                 matrix,
-                (int(dst_w), int(dst_h)),
+                dsize=(int(dst_w), int(dst_h)),
                 flags=cv2.INTER_LINEAR,
                 borderMode=cv2.BORDER_REPLICATE,
             )
-        kwargs['image'] = image
+        kwargs["image"] = image
         return kwargs
 
 
@@ -217,23 +233,27 @@ class ScaleX:
     """
     Selfwrited class for augmentations for image resize
     """
+
     def __init__(
-            self,
-            p: float = 0.5,
-            scale_min: float = 0.8,
-            scale_max: float = 1.2
+        self, p_value: float = 0.5, scale_min: float = 0.8, scale_max: float = 1.2,
     ):
-        self.p = p
+        self.p_value = p_value
         self.scale_min = scale_min
         self.scale_max = scale_max
 
-    def __call__(self, force_apply=False, **kwargs):
-        image = kwargs['image'].copy()
+    def __call__(self, force_apply=False, **kwargs) -> Dict[str, np.ndarray]:
+        """
+        Call function for ScaleX augmentations
+        :param force_apply: flag to force applying
+        :param kwargs: keyword arguments
+        :return: dictionary with transformed data
+        """
+        image = kwargs["image"].copy()
 
-        if random.random() < self.p:
-            h, w, c = image.shape
-            w = int(w * random.uniform(self.scale_min, self.scale_max))
-            image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LINEAR)
+        if random.random() < self.p_value:
+            img_h, img_w, _ = image.shape
+            img_w = int(img_w * random.uniform(self.scale_min, self.scale_max))
+            image = cv2.resize(image, (img_w, img_h), interpolation=cv2.INTER_LINEAR)
 
-        kwargs['image'] = image
+        kwargs["image"] = image
         return kwargs

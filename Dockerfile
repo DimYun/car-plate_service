@@ -11,7 +11,7 @@ RUN apt-get update && \
     libsm6 \
     libxext6
 
-WORKDIR /planet_service
+WORKDIR /plate_service
 
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
