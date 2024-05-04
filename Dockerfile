@@ -9,7 +9,9 @@ RUN apt-get update && \
     wget \
     ffmpeg \
     libsm6 \
-    libxext6
+    libxext6 \
+    libjpeg-dev \
+    libpng-dev
 
 WORKDIR /plate_service
 

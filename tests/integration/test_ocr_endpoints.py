@@ -12,9 +12,9 @@ def test_types_list(client: TestClient):
     response = client.get("/plates/get_content?content_id=test")
     assert response.status_code == HTTPStatus.OK
 
-    planet_types = response.json()["content"]["plates"][0]['value'][0]
+    plate_types = response.json()["content"]["plates"][0]['value'][0]
 
-    assert isinstance(planet_types, str)
+    assert isinstance(plate_types, str)
 
 
 def test_predict(client: TestClient, sample_image_bytes: bytes):

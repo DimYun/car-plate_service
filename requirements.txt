@@ -73,9 +73,11 @@ testfixtures==6.18.5
 tomli==2.0.1
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch==2.0.1+cpu
-torchvision
+torchvision==0.17.0
+torchmetrics==1.0.1
 typing-extensions==4.9.0
 urllib3==2.1.0
 uvicorn==0.18.2
 wemake-python-styleguide==0.18.0
 tox
+jpeg4py==0.1.4
