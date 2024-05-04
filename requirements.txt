@@ -73,7 +73,7 @@ testfixtures==6.18.5
 tomli==2.0.1
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch==2.2.0+cpu
-torchvision==0.17.0
+torchvision==0.17.0+cpu
 torchmetrics==1.0.1
 typing-extensions==4.9.0
 urllib3==2.1.0
