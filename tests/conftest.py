@@ -20,7 +20,7 @@ def sample_image_bytes():
     Fixture with image in bytes
     :return: image in bytes
     """
-    with open(os.path.join(TESTS_DIR, "images", "img_1620.jpg"), "rb") as image_file:
+    with open(os.path.join(TESTS_DIR, "images", "test.jpg"), "rb") as image_file:
         yield image_file.read()
 
 
