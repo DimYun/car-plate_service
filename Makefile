@@ -17,6 +17,11 @@ download_model:
 	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/id_rsa
 	dvc pull
 
+.PHONY: download_model_manual
+download_model:
+	dvc remote modify --local $(DVC_REMOTE_NAME) ask_passphrase true
+	dvc pull
+
 .PHONY: run_unit_tests
 run_unit_tests:
 	PYTHONPATH=. pytest tests/unit/

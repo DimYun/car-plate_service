@@ -30,7 +30,7 @@ def sample_image_np():
     Fixture with image in numpy
     :return: image in numpy array
     """
-    img = cv2.imread(os.path.join(TESTS_DIR, "images", "img_1620.jpg"))
+    img = cv2.imread(os.path.join(TESTS_DIR, "images", "test.jpg"))
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
