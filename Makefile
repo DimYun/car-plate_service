@@ -1,6 +1,6 @@
 APP_PORT := 5039
 DOCKER_TAG := latest
-DOCKER_IMAGE := plates
+DOCKER_IMAGE := diunovidov_plates
 DVC_REMOTE_NAME := dvc_models_plates
 USERNAME := d.iunovidov
 

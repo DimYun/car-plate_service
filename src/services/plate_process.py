@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from src.services.preprocess_utils import get_crop, get_ocr
+from src.services.preprocess_utils import PlatePredictor, OCRPredictor
 
 
 class Storage:
@@ -53,8 +53,16 @@ class ProcessPlate:
     """Class for storing processed"""
     status = "Start process image first"
 
-    def __init__(self, storage: Storage):
+    def __init__(
+        self,
+        storage: Storage,
+        plate_predictor: PlatePredictor,
+        ocr_predictor: OCRPredictor
+    ):
         self._storage = storage
+        self.plate_predictor = plate_predictor
+        self.ocr_predictor = ocr_predictor
+        print("finish process plate init")
 
     def process(self, image: np.ndarray, content_id: str) -> dict:
         """
@@ -63,12 +71,17 @@ class ProcessPlate:
         :param content_id: id of input image
         :return: dictionary with results in json format
         """
+        print("Call", content_id)
         json_responce = self._storage.get(content_id)
         if json_responce == self.status:
             # 1st stage - get plate crop
-            image_plate_crop, bbox_xxyy = get_crop(image)
+            image_plate_crop, bbox_xxyy = self.plate_predictor.predict(
+                image,
+            )
             # 2nd stage - get OCR plate number
-            plate_ocr = get_ocr(image_plate_crop)
+            plate_ocr = self.ocr_predictor.predict(
+                image_plate_crop
+            )
             # 3rd stage - save data
             json_responce = {
                 "plates": [

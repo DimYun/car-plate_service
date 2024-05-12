@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, File, UploadFile
-from PIL import Image
 
 from src.containers.containers import Container
 from src.routes.routers import router
@@ -24,7 +23,9 @@ def get_content(
     :return: dict with content
     """
     return {
-        "content": storage.get(content_id),
+        "code": 200,
+        "predictions": storage.get(content_id),
+        "error": None,
     }
 
 
@@ -45,20 +46,16 @@ def process_content(
     :param content_process: container with process functionality
     :return: dictionary with results in json format
     """
-    try:
-        image_data = content_image.file.read()
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        content_image.file.close()
+    image_data = content_image.file.read()
+    content_image.file.close()
 
     image = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
-    Image.fromarray(image)
     str_process = content_process.process(
         image,
         str(content_image.filename),
     )
     return {
-        "message": f"Successfully uploaded {content_image.filename}",
-        "scores": str_process,
+        "code": 200,
+        "predictions": str_process,
+        "error": None,
     }

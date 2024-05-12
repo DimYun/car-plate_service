@@ -16,7 +16,7 @@ def test_predict(client: TestClient, sample_image_bytes: bytes):
     response = client.post("/plates/process_content", files=files)
     assert response.status_code == HTTPStatus.OK
 
-    predicted_string = response.json()["scores"]["plates"][0]["value"][0]
+    predicted_string = response.json()["predictions"]["plates"][0]["value"][0]
 
     assert isinstance(predicted_string, str)
 
@@ -29,7 +29,7 @@ def test_types_list(client: TestClient):
     """
     response = client.get("/plates/get_content?content_id=test")
     assert response.status_code == HTTPStatus.OK
-    get_data = response.json()["content"]
+    get_data = response.json()["predictions"]
     print('response: ', response.json())
     if not isinstance(get_data, str):
         get_data = get_data["plates"][0]['value'][0]
