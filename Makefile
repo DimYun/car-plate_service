@@ -1,3 +1,4 @@
+DEPLOY_HOST := 91.206.15.25
 APP_PORT := 5039
 DOCKER_TAG := latest
 DOCKER_IMAGE := diunovidov_plates
