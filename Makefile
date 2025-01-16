@@ -1,9 +1,9 @@
-DEPLOY_HOST := 91.206.15.25
-APP_PORT := 5039
+DEPLOY_HOST := 93.123.95.160
+APP_PORT := 5041
 DOCKER_TAG := latest
 DOCKER_IMAGE := diunovidov_plates
 DVC_REMOTE_NAME := dvc_models_plates
-USERNAME := d.iunovidov
+USERNAME := dmitriy
 
 .PHONY: run_app
 run_app:
@@ -19,7 +19,7 @@ download_model:
 	dvc pull
 
 .PHONY: download_model_manual
-download_model:
+download_model_manual:
 	dvc remote modify --local $(DVC_REMOTE_NAME) ask_passphrase true
 	dvc pull
 
@@ -67,11 +67,10 @@ destroy:
 install_dvc:
 	pip install dvc[ssh]==3.33.2
 
-
 .PHONY: init_dvc
 init_dvc:
 	dvc init --no-scm
-	dvc remote add --default $(DVC_REMOTE_NAME) ssh://91.206.15.25/home/$(USERNAME)/$(DVC_REMOTE_NAME)
+	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
 
@@ -81,4 +80,4 @@ install_c_libs:
 
 .PHONY: docker_run
 docker_run:
-	docker run -p 5039:5039 -d $(DOCKER_IMAGE):$(DOCKER_TAG)
+	docker run -p $(APP_PORT):$(APP_PORT) -d $(DOCKER_IMAGE):$(DOCKER_TAG)

@@ -19,6 +19,6 @@ COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-EXPOSE 5039
+EXPOSE 5041
 
 CMD make run_app
