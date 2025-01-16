@@ -1,56 +1,73 @@
-# Домашняя работа №1. Сервис
+## Car plates project. FastAPI service (part 3/3)
+
+This is the project for car plate OCR recognition, which include:
+1. [Neural network segmentation model for car plate area with number selection (part 1/3)](https://github.com/DimYun/car-plate-segm_model)
+2. [Neural network OCR model for plate character recognition (part 2/3)](https://github.com/DimYun/car-plate-ocr_model)
+3. API service for these two models (part 3/3)
+4. [Additional example how to use API service in Telegram bot](https://github.com/DimYun/car-plate_tg-bot)
+
+Fast API service is develop according two neural network model for car plate segmentation and OCR.
+
+`src/container_task.py` contain 2 classes:
+* `Storage` - can save calculated data into `*.json` (simple "caching" procedure).
+* `ProcessPlates` - can load ONNX models and process car plate numbers. After that, it save results in `Storage`.
+
+`app.py` contain FastAPI application, which have 2 handles:
+1. `get_content` - return content according to `content_id`.
+2. `process_content` - generate content with NN models for uploaded image.
+
+`src/container_task.py` contain example of calculating procedure.
 
 
-Сервис реализован на FastAPI и предназначен для выдачи предсказаний модели [многоклассовой классификации](https://gitlab.deepschool.ru/cvr-dec23/d.iunovidov/hw-01-modeling/-/tree/dev?ref_type=heads).
+Used technologies:
+
+* FastAPI
+* Dependencies injector containers
+* CI/CD (test, deploy, destroy)
+* DVC
+* Docker
+* Unit & Integration tests with coverage report
+* Linters (flake8 + wemake)
+
+**Disclaimers**:
+
+* the project was originally crated and maintained in GitLab local instance, some repo functionality may be unavailable
+* the project was created by me and me only
 
 
-Адрес для тестов: http://91.206.15.25:5039
-
-Документация и тестирование GET и POST запросов: http://91.206.15.25:5039/docs#/default/process_content_process_content_post
-
-В `src/container_task.py` лежит код двух классов:
-
-* `Storage` - умеет сохранять рассчитанные вероятности в папку и забирать ранее посчитанные вероятности (позволяет "кешировать" результаты работы модели).
-* `ProcessPlanet` - умеет загружать ONNX модель и расчитывать вероятности классов для передаваемого изображения, после чего зовет `storage`, чтобы тот сохранил контент.
-
-В `app.py` лежит приложение FastAPI, у которого две ручки:
-1. `get_content` - возвращает контент по `content_id`.
-2. `process_content` - генерирует контент с помощью нейронной сети для переданного изображения.
-
-Пример работы можно посмотреть в `if __name__ == '__main__` в `src/container_task.py`
+Location for manual test:
+* https://car_plates_api.lydata.duckdns.org
+* docs https://car_plates_api.lydata.duckdns.org/docs#/default/process_content_process_content_post
 
 
-## Настройка окружения
+## Setup of environment
 
-Сначала создать и активировать venv:
+First, create and activate `venv`:
+    ```bash
+    python3 -m venv venv
+    . venv/bin/activate
+    ```
 
-```bash
-python3 -m venv venv
-. venv/bin/activate
-```
+Next, install dependencies:
+    ```bash
+    make install
+    ```
 
-Дальше поставить зависимости:
+### Commands
 
-```bash
-make install
-```
+#### Preparation
+* `make install` - install python dependencies
 
-### Команды
+#### Run service
+* `make run_app` - run servie. You can define argument `APP_PORT`
 
-#### Подготовка
-* `make install` - установка библиотек
+#### Build docker
+* `make build` - you can define arguments `DOCKER_TAG`, `DOCKER_IMAGE`
 
-#### Запуск сервиса
-* `make run_app` - запустить сервис. Можно с аргументом `APP_PORT`
+#### Static analyse
+* `make lint` - run linters
 
-#### Сборка образа
-* `make build` - собрать образ. Можно с аргументами `DOCKER_TAG`, `DOCKER_IMAGE`
-
-#### Статический анализ
-* `make lint` - запуск линтеров
-
-#### Тестирование
-* `make run_unit_tests` - запуск юнит-тестов
-* `make run_integration_tests` - запуск интеграционных тестов
-* `make run_all_tests` - запуск всех тестов
-
+#### Tests
+* `make run_unit_tests` - run unit tests
+* `make run_integration_tests` - run integration tests
+* `make run_all_tests` - run all tests

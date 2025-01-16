@@ -1,0 +1,15 @@
+content_process:
+  dir_path: 'api_test_dir'
+  dir_upload: 'uploaded_imgs'
+
+plate_model_parameters:
+  plate_checkpoint: "models/plate-model.onnx"
+  plate_img_width: 512
+  plate_img_height: 512
+
+ocr_model_parameters:
+  vocabular: "#&0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZÄÅÖÜĆČĐŠŽАБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ"
+  ocr_checkpoint: "models/plate-ocr-model.onnx"
+  ocr_img_width: 416
+  ocr_img_height: 64
+  text_size: 10
