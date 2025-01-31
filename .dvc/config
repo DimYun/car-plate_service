@@ -4,5 +4,5 @@
 [cache]
     type = "hardlink,symlink"
 ['remote "dvc_models_plates"']
-    url = ssh://91.206.15.25:22/home/d.iunovidov/dvc_models_plates
-    user = d.iunovidov
+    url = ssh://93.123.95.160:2122/home/dmitriy/dvc_models_plates
+    user = dmitriy
