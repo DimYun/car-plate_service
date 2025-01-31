@@ -16,7 +16,7 @@ install:
 
 .PHONY: download_model
 download_model:
-	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
+	#dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
 	dvc pull
 
 .PHONY: download_model_manual
@@ -74,7 +74,6 @@ init_dvc:
 	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST):$(SSH_PORT)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
-	cat
 
 .PHONY: install_c_libs
 install_c_libs:
