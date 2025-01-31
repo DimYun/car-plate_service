@@ -70,7 +70,7 @@ install_dvc:
 
 .PHONY: init_dvc
 init_dvc:
-	dvc init --no-scm
+	dvc init --no-scm -f
 	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST):$(SSH_PORT)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
