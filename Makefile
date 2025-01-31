@@ -1,4 +1,5 @@
 DEPLOY_HOST := 93.123.95.160
+SSH_PORT := 2122
 APP_PORT := 5041
 DOCKER_TAG := latest
 DOCKER_IMAGE := diunovidov_plates
@@ -15,12 +16,12 @@ install:
 
 .PHONY: download_model
 download_model:
-	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/id_rsa
+	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
 	dvc pull
 
 .PHONY: download_model_manual
 download_model_manual:
-	dvc remote modify --local $(DVC_REMOTE_NAME) ask_passphrase true
+	#dvc remote modify --local $(DVC_REMOTE_NAME) ask_passphrase true
 	dvc pull
 
 .PHONY: run_unit_tests
@@ -70,9 +71,10 @@ install_dvc:
 .PHONY: init_dvc
 init_dvc:
 	dvc init --no-scm
-	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
+	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST):$(SSH_PORT)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
 	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
 	dvc config cache.type hardlink,symlink
+	cat
 
 .PHONY: install_c_libs
 install_c_libs:
