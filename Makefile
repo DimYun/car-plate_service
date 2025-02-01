@@ -14,9 +14,20 @@ run_app:
 install:
 	pip install -r requirements.txt
 
+.PHONY: install_dvc
+install_dvc:
+	pip install 'dvc[ssh]==3.33.2'
+
+.PHONY: init_dvc
+init_dvc:
+	dvc init --no-scm -f
+	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST):$(SSH_PORT)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
+	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
+	dvc config cache.type hardlink,symlink
+
 .PHONY: download_model
 download_model:
-	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
+	#dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
 	dvc pull -v
 
 .PHONY: download_model_manual
@@ -63,17 +74,6 @@ deploy:
 destroy:
 	ansible-playbook -i deploy/ansible/inventory.ini deploy/ansible/destroy.yml \
 		-e host=$(DEPLOY_HOST)
-
-.PHONY: install_dvc
-install_dvc:
-	pip install dvc[ssh]==3.33.2
-
-.PHONY: init_dvc
-init_dvc:
-	dvc init --no-scm -f
-	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST):$(SSH_PORT)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
-	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
-	dvc config cache.type hardlink,symlink
 
 .PHONY: install_c_libs
 install_c_libs:
