@@ -16,7 +16,7 @@ install:
 
 .PHONY: download_model
 download_model:
-	#dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
+	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
 	dvc pull -v $(DVC_REMOTE_NAME)
 
 .PHONY: download_model_manual
