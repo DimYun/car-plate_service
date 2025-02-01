@@ -17,6 +17,7 @@ install:
 .PHONY: install_dvc
 install_dvc:
 	pip install 'dvc[ssh]==3.33.2'
+	pip install 'asyncssh==2.17.0'
 
 .PHONY: init_dvc
 init_dvc:

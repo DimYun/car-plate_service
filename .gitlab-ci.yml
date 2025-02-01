@@ -17,8 +17,8 @@ stages:
     - mkdir -p ~/.ssh
     - cp $SSH_PRIVATE_KEY ~/.ssh/gitlab_cicd
     - chmod 400 ~/.ssh/gitlab_cicd
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\tHost 93.123.95.160\n\tPort 2122\n\n" > ~/.ssh/config'
-    - cat ~/.ssh/config
+#    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\tPort 2122\n\n" > ~/.ssh/config'
+#    - cat ~/.ssh/config
 
   after_script:
     - rm -f ~/.ssh/gitlab_cicd
