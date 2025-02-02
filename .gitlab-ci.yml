@@ -40,9 +40,9 @@ pull_model:
 
 .docker_common: &docker_common
   image: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
+#  variables:
+#    DOCKER_HOST: tcp://docker:2375
+#    DOCKER_TLS_CERTDIR: ""
   services:
     - docker:20.10.5-dind
 
