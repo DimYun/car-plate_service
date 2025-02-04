@@ -15,17 +15,20 @@ stages:
   before_script:
     - chmod 400 $SSH_PRIVATE_KEY
     - mkdir -p ~/.ssh
-    - cp $SSH_PRIVATE_KEY ~/.ssh/id_rsa
-    - chmod 400 ~/.ssh/id_rsa
+    - cp $SSH_PRIVATE_KEY ~/.ssh/gitlab_cicd
+    - chmod 400 ~/.ssh/gitlab_cicd
+#    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\tPort 2122\n\n" > ~/.ssh/config'
+#    - cat ~/.ssh/config
 
   after_script:
-    - rm -f ~/.ssh/id_rsa
+    - rm -f ~/.ssh/gitlab_cicd
 
 pull_model:
   <<: *ssh_key_template
   stage: prepare
   script:
     - make install_dvc
+    - make init_dvc
     - make download_model
   artifacts:
     paths:
@@ -37,9 +40,9 @@ pull_model:
 
 .docker_common: &docker_common
   image: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
+#  variables:
+#    DOCKER_HOST: tcp://docker:2375
+#    DOCKER_TLS_CERTDIR: ""
   services:
     - docker:20.10.5-dind
 

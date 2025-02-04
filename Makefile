@@ -1,4 +1,5 @@
 DEPLOY_HOST := 93.123.95.160
+SSH_PORT := 2122
 APP_PORT := 5041
 DOCKER_TAG := latest
 DOCKER_IMAGE := diunovidov_plates
@@ -13,14 +14,26 @@ run_app:
 install:
 	pip install -r requirements.txt
 
+.PHONY: install_dvc
+install_dvc:
+	pip install 'dvc[ssh]==3.33.2'
+	pip install 'asyncssh==2.17.0'
+
+.PHONY: init_dvc
+init_dvc:
+	dvc init --no-scm -f
+	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST):$(SSH_PORT)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
+	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
+	dvc config cache.type hardlink,symlink
+
 .PHONY: download_model
 download_model:
-	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/id_rsa
-	dvc pull
+	dvc remote modify --local $(DVC_REMOTE_NAME) keyfile ~/.ssh/gitlab_cicd
+	dvc pull -v
 
 .PHONY: download_model_manual
 download_model_manual:
-	dvc remote modify --local $(DVC_REMOTE_NAME) ask_passphrase true
+	#dvc remote modify --local $(DVC_REMOTE_NAME) ask_passphrase true
 	dvc pull
 
 .PHONY: run_unit_tests
@@ -62,17 +75,6 @@ deploy:
 destroy:
 	ansible-playbook -i deploy/ansible/inventory.ini deploy/ansible/destroy.yml \
 		-e host=$(DEPLOY_HOST)
-
-.PHONY: install_dvc
-install_dvc:
-	pip install dvc[ssh]==3.33.2
-
-.PHONY: init_dvc
-init_dvc:
-	dvc init --no-scm
-	dvc remote add --default $(DVC_REMOTE_NAME) ssh://$(DEPLOY_HOST)/home/$(USERNAME)/$(DVC_REMOTE_NAME)
-	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
-	dvc config cache.type hardlink,symlink
 
 .PHONY: install_c_libs
 install_c_libs:
